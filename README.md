@@ -1,4 +1,5 @@
 # Version 7.0 (no longer beta!)
+(press H in-game to show help menu)
 ### Features:
 - Solids, Liquids, Powders, and Gases
 - Radioactive Elements
