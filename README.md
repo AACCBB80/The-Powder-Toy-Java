@@ -1,4 +1,4 @@
-# ![image](https://github.com/user-attachments/assets/4dea3d1c-345a-4b88-bff8-2185e5a62923) The Powder Toy Java
+# ![tptj](https://github.com/user-attachments/assets/08132876-76f4-4132-b4dc-e8ca2daaf51f) The Powder Toy Java
 
 ## Version 7.1 (no longer beta!)
 (press H in-game to show help menu)
