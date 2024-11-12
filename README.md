@@ -1,6 +1,6 @@
 # ![image](https://github.com/user-attachments/assets/4dea3d1c-345a-4b88-bff8-2185e5a62923) The Powder Toy Java
 
-## Version 7.0 (no longer beta!)
+## Version 7.1 (no longer beta!)
 (press H in-game to show help menu)
 ### Features:
 - Solids, Liquids, Powders, and Gases
