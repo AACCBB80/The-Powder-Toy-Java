@@ -4,7 +4,8 @@ import java.awt.*;
 
 public class Delay extends Element {
     private int timer = 0;
-    private final int delayDuration = 100;
+    public static int delayDuration = 100;
+
 
     @Override
     public void update(FallingSandGame game, int x, int y) {

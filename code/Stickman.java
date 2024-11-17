@@ -5,16 +5,19 @@ import java.util.Random;
 
 public class Stickman extends Element {
   double updateRes = 1;
+  public Stickman() {
+    weight = 1;
+  }
   @Override
   public void update(FallingSandGame game, int x, int y) {
     updateRes++;
     String aboba = game.keyPressed;
     Random random = new Random();
-    if (game.isEmpty(x, y + 1)) {
+    //if (game.isEmpty(x, y + 1)) {
       if (updateRes % 8 == 0) {
         game.swapElements(x, y, x, y + 1);
       }
-    }
+    //}
     if (Objects.equals(aboba, "W") && game.isEmpty(x, y - 7)) {
       if (updateRes % 2 == 0 || game.isEmpty(x, y + 1)) {
         return;
@@ -30,7 +33,10 @@ public class Stickman extends Element {
       }
       game.swapElements(x, y, x + 1, y);
     }
-    if (game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire | game.getElementAt(x+1, y + 1) instanceof Fire | game.getElementAt(x+0, y + 1) instanceof Fire | game.getElementAt(x-1, y + 1) instanceof Fire) {
+    if (game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire | game.getElementAt(x+1, y + 1) instanceof Fire | game.getElementAt(x+0, y + 1) instanceof Fire | game.getElementAt(x-1, y + 1) instanceof Fire
+    || game.getElementAt(x+1, y - 1) instanceof Plasma | game.getElementAt(x+0, y - 1) instanceof Plasma | game.getElementAt(x-1, y - 1) instanceof Plasma | game.getElementAt(x+1, y ) instanceof Plasma |game.getElementAt(x+0, y ) instanceof Plasma | game.getElementAt(x-1, y ) instanceof Plasma | game.getElementAt(x+1, y + 1) instanceof Plasma | game.getElementAt(x+0, y + 1) instanceof Plasma | game.getElementAt(x-1, y + 1) instanceof Plasma
+    || game.getElementAt(x+1, y - 1) instanceof Neutron | game.getElementAt(x+0, y - 1) instanceof Neutron | game.getElementAt(x-1, y - 1) instanceof Neutron | game.getElementAt(x+1, y ) instanceof Neutron |game.getElementAt(x+0, y ) instanceof Neutron | game.getElementAt(x-1, y ) instanceof Neutron | game.getElementAt(x+1, y + 1) instanceof Neutron | game.getElementAt(x+0, y + 1) instanceof Neutron | game.getElementAt(x-1, y + 1) instanceof Neutron
+    || game.getElementAt(x+1, y - 1) instanceof Carbon_Dioxide | game.getElementAt(x+0, y - 1) instanceof Carbon_Dioxide | game.getElementAt(x-1, y - 1) instanceof Carbon_Dioxide | game.getElementAt(x+1, y ) instanceof Carbon_Dioxide |game.getElementAt(x+0, y ) instanceof Carbon_Dioxide | game.getElementAt(x-1, y ) instanceof Carbon_Dioxide | game.getElementAt(x+1, y + 1) instanceof Carbon_Dioxide | game.getElementAt(x+0, y + 1) instanceof Carbon_Dioxide | game.getElementAt(x-1, y + 1) instanceof Carbon_Dioxide) {
             if (random.nextInt(3) == 1)
             game.setElementAt(x, y, null);
         }

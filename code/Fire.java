@@ -8,6 +8,7 @@ public class Fire extends Element {
 
     public Fire() {
         this.life = 100;
+        weight = 0;
     }
 
     private Color customColor = new Color(255, 255, 189);
@@ -31,27 +32,27 @@ public class Fire extends Element {
 
         switch (random.nextInt(5)) {
         case 0:
-            if (game.isEmpty(x - 1, y - 1)) {
+            if (game.isEmpty(x - 1, y - 1)|| game.canPush(x,y,x-1,y+1)) {
                 game.swapElements(x, y, x - 1, y - 1);
             }
             break;
         case 1:
-            if (game.isEmpty(x, y - 1)) {
+            if (game.isEmpty(x, y - 1)|| game.canPush(x,y,x,y-1)) {
                 game.swapElements(x, y, x, y - 1);
                 break;
             }
         case 2:
-            if (game.isEmpty(x + 1, y - 1)) {
+            if (game.isEmpty(x + 1, y - 1)|| game.canPush(x,y,x+1,x-1)) {
                 game.swapElements(x, y, x + 1, y - 1);
                 break;
             }
         case 3:
-            if (game.isEmpty(x - 1, y)) {
+            if (game.isEmpty(x - 1, y)|| game.canPush(x,y,x-1,y)) {
                 game.swapElements(x, y, x - 1, y);
                 break;
             }
         case 4:
-            if (game.isEmpty(x + 1, y)) {
+            if (game.isEmpty(x + 1, y)|| game.canPush(x,y,x+1,y)) {
                 game.swapElements(x, y, x + 1, y);
                 break;
             }

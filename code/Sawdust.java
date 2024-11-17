@@ -5,6 +5,9 @@ import java.util.Random;
 
 public class Sawdust extends Element {
     double airRes = 1;
+    public Sawdust() {
+        weight = 2;
+    }
     @Override
     public void update(FallingSandGame game, int x, int y) {
 
@@ -28,19 +31,13 @@ public class Sawdust extends Element {
             game.swapElements(x, y, x+rndInt, y + (int)Math.floor(airRes % 4 % 3%2));
         }
         Random random = new Random();
-        if ((random.nextInt(60) == 1)) {
+    if ((random.nextInt(60) == 1)) {
         	if (	game.getElementAt(x+1, y - 1) instanceof Plasma | game.getElementAt(x+0, y - 1) instanceof Plasma | game.getElementAt(x-1, y - 1) instanceof Plasma | game.getElementAt(x+1, y ) instanceof Plasma |game.getElementAt(x+0, y ) instanceof Plasma | game.getElementAt(x-1, y ) instanceof Plasma | game.getElementAt(x+1, y + 1) instanceof Plasma | game.getElementAt(x+0, y + 1) instanceof Plasma | game.getElementAt(x-1, y + 1) instanceof Plasma
                     |game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire | game.getElementAt(x+1, y + 1) instanceof Fire | game.getElementAt(x+0, y + 1) instanceof Fire | game.getElementAt(x-1, y + 1) instanceof Fire) {
-        		if (game.getHeatAt(x,y) > 700) {
-                    game.setElementAt(x, y, new Plasma());
-                    } else {
-                    game.setElementAt(x, y, new Fire());
-                    }
+                game.setElementAt(x, y, new Fire());
+        	}}
             }
-            }
-        
-
-    }
+            
 
     @Override
     public void draw(Graphics g, int x, int y, int width, int height) {

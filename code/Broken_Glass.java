@@ -4,6 +4,10 @@ import java.awt.*;
 import java.util.Random;
 
 public class Broken_Glass extends Element {
+
+    public Broken_Glass() {
+        weight = 4;
+    }
     private Color customColor = new Color(77, 77, 77);
     @Override
 
@@ -14,16 +18,16 @@ public class Broken_Glass extends Element {
 
         Random random = new Random();
 
-        if (game.isEmpty(x, y + 1)) {
+        if (game.isEmpty(x, y + 1) || game.canPush(x, y, x, y + 1)) {
             game.swapElements(x, y, x, y + 1);
-        } else if (game.isEmpty(x-1, y + 1) || game.isEmpty(x+1, y + 1)) {
+        } else if ((game.isEmpty(x - 1, y + 1) || game.canPush(x, y, x - 1, y + 1)) || (game.isEmpty(x + 1, y + 1) || game.canPush(x, y, x + 1, y + 1))) {
             int rndInt = 0;
             while (rndInt == 0) {
                 rndInt = random.nextInt(3) - 1;
             }
             game.swapElements(x, y, x+rndInt, y + 1);
         }
-
+        
         if (game.getHeatAt(x, y) > 1000) {
             game.setElementAt(x,y,new Glass());
         } else {

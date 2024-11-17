@@ -8,6 +8,7 @@ public class Smoke extends Element {
 
     public Smoke() {
         this.life = 50;
+        weight = 0;
     }
 
     @Override
@@ -18,42 +19,39 @@ public class Smoke extends Element {
             return;
         }
 
-        //System.out.println(255.0 * (life / 100.0) + " " + life / 100.0);
         if (life == 0) {
             game.setElementAt(x, y, null);
         } else {
             life--;
         }
 
-        // Check if there's an element above the clone
         switch (random.nextInt(5)) {
-        case 0:
-            if (game.isEmpty(x - 1, y - 1)) {
-                game.swapElements(x, y, x - 1, y - 1);
-            }
-            break;
-        case 1:
-            if (game.isEmpty(x, y - 1)) {
-                game.swapElements(x, y, x, y - 1);
+            case 0:
+                if (game.isEmpty(x - 1, y - 1) || game.canPush(x, y, x - 1, y - 1)) {
+                    game.swapElements(x, y, x - 1, y - 1);
+                }
                 break;
-            }
-        case 2:
-            if (game.isEmpty(x + 1, y - 1)) {
-                game.swapElements(x, y, x + 1, y - 1);
+            case 1:
+                if (game.isEmpty(x, y - 1) || game.canPush(x, y, x, y - 1)) {
+                    game.swapElements(x, y, x, y - 1);
+                }
                 break;
-            }
-        case 3:
-            if (game.isEmpty(x - 1, y)) {
-                game.swapElements(x, y, x - 1, y);
+            case 2:
+                if (game.isEmpty(x + 1, y - 1) || game.canPush(x, y, x + 1, y - 1)) {
+                    game.swapElements(x, y, x + 1, y - 1);
+                }
                 break;
-            }
-        case 4:
-            if (game.isEmpty(x + 1, y)) {
-                game.swapElements(x, y, x + 1, y);
+            case 3:
+                if (game.isEmpty(x - 1, y) || game.canPush(x, y, x - 1, y)) {
+                    game.swapElements(x, y, x - 1, y);
+                }
                 break;
-            }
+            case 4:
+                if (game.isEmpty(x + 1, y) || game.canPush(x, y, x + 1, y)) {
+                    game.swapElements(x, y, x + 1, y);
+                }
+                break;
         }
-
     }
 
     @Override

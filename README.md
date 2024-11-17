@@ -1,6 +1,6 @@
-# ![tptj](https://github.com/user-attachments/assets/08132876-76f4-4132-b4dc-e8ca2daaf51f) The Powder Toy Java
+# ![tptj](https://github.com/user-attachments/assets/08132876-76f4-4132-b4dc-e8ca2daaf51f) The Powder Toy Java 8.0
 
-## Version 7.1 (no longer beta!)
+## Version 8.0 (no longer beta!)
 (press H in-game to show help menu)
 ### Features:
 - Solids, Liquids, Powders, and Gases
@@ -13,7 +13,8 @@
 - Explosives
 - Resizable Simulations
 - Resizable Cells
-- Online Saves
+- Online Saves (now with GUI list)
+- Weight
 
 ### Screenshots
 ![SCREENSHOT01](https://github.com/user-attachments/assets/cfd4292f-6aa0-4396-8d9d-04c4f0de5b3e)

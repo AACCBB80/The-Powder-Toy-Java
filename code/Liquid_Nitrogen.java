@@ -3,8 +3,8 @@ package thePowderToyJava;
 import java.awt.*;
 import java.util.Random;
 
-public class LN2 extends Element {
-    public LN2() {
+public class Liquid_Nitrogen extends Element {
+    public Liquid_Nitrogen() {
 weight = 2;
     }
     private static final Random random = new Random();

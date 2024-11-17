@@ -8,19 +8,21 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.*;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FallingSandGame extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener {
     public static int WIDTH = 800;
     public static int HEIGHT = 420;
-    public static int SIZE = 7;
+    public static int SIZE = 6;
     private Element[][] grid = new Element[HEIGHT / SIZE][WIDTH / SIZE];
     private double[][] pressure = new double[HEIGHT / SIZE][WIDTH / SIZE];
     private double[][] temperatureGrid;
-    private int brushSize = 4;
+    private int brushSize = 5;
     long frameCounter = 0;
     public static boolean replaceMode = false;
+    public static boolean tempType = true;
 
     public static String keyPressed = null;
     public static boolean debugMode = true;
@@ -28,14 +30,16 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
     private int fps;
     private long lastTime = System.nanoTime();
     private int frames = 0;
+    public static int nameFrames = 0;
+    public static String hoveredElement = "";
     private String username = null;
     private String password = null;
 
-    private Element createElementInstance(String className) {
+    public Element createElementInstance(String className) {
         try {
             Class<?> clazz = Class.forName("thePowderToyJava." + className);
             return (Element) clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) { JOptionPane.showMessageDialog(new JFrame(), "Fatal error!\n\n"+e+"\n\nThe program will now exit.", "Error!", JOptionPane.ERROR_MESSAGE); System.exit(0);
+        } catch (Exception e) { /*JOptionPane.showMessageDialog(new JFrame(), "Fatal error!\n\n"+e+"\n\nThe program will now exit.", "Error!", JOptionPane.ERROR_MESSAGE); System.exit(0);*/
             return null;
         }
     }
@@ -182,8 +186,12 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
     }
 
     public boolean isEmpty(int x, int y) {
+        
         return isInBounds(x, y) && grid[y][x] == null;
     }
+
+   public boolean canPush(int x1, int y1, int x2, int y2) { if (!isInBounds(x1, y1) || !isInBounds(x2, y2)) { return false; } Element element1 = grid[y1][x1]; Element element2 = grid[y2][x2]; if (element1 != null && element2 != null) { return element1.getWeight() > element2.getWeight(); } return false;}
+   
     public static Element[][] resizeArray2D(Element[][] originalArray, int newRowCount, int newColCount) {
 
         Element[][] newArray = null;
@@ -265,6 +273,38 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
     private int mouseButtonPressed = -1;
     private Dimension newSize = getSize();
 
+
+    public static void hover1(Container container) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                button.setBackground(new Color(239, 233, 255));
+                hover2(button);
+            } else if (component instanceof Container) {
+                hover1((Container) component);
+            }
+        }
+    }
+
+    public static void hover2(JButton button) {
+        if (button.getClientProperty("hov") == null) {
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent evt) {
+                    button.setBackground(new Color(214, 197, 255));
+                    hoveredElement = button.getText();
+                    nameFrames = 255*2;
+                }
+
+                @Override
+                public void mouseExited(MouseEvent evt) {
+                    button.setBackground(new Color(239, 233, 255));
+                }
+            });
+            button.putClientProperty("hov", Boolean.TRUE);
+        }
+    }
+
     public FallingSandGame() {
         try { } catch (Exception e) { JOptionPane.showMessageDialog(new JFrame(), "Fatal error!\n\n"+e+"\n\nThe program will now exit.", "Error!", JOptionPane.ERROR_MESSAGE); System.exit(0);  }
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyListenerHandler());
@@ -287,7 +327,7 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
             }
         });
 
-        JFrame frame = new JFrame("The Powder Toy Java (7.0)");
+        JFrame frame = new JFrame("The Powder Toy Java (8.0)");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addKeyListener(this);
         Color customColor = new Color(28, 28, 28);
@@ -385,14 +425,16 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
 
         pane.setPreferredSize(new Dimension(frame.getWidth(), 45));
 
-        Element[]  solids = {new Wood(), new Coal(), new Diamond(), new Stone(), new Glass(), new Ice()};
-        Element[] liquids = {new Water(), new Goop(), new Nitroglycerin(), new LN2()};
+        // ELEMENT INIT 
+
+        Element[]  solids = {new Wood(), new Coal(), new Diamond(), new Stone(), new Glass(), new Ice(), new Paper(), new TNT(), new Plastic(), new Lead()};
+        Element[] liquids = {new Water(), new Goop(), new Nitroglycerin(), new Liquid_Nitrogen(), new Acid(), new Oil(), new Lava()};
         Element[] powders = {new Dust(), new Sand(), new Sawdust(), new Gravel(), new Broken_Coal(), new Broken_Glass()};
-        Element[]  gasses = {new Fire(), new Plasma(), new Gas(), new Smoke(), new Oxygen(), new Hydrogen(), new Water_Vapor()};
+        Element[]  gasses = {new Fire(), new Plasma(), new Gas(), new Smoke(), new Oxygen(), new Hydrogen(), new Water_Vapor(), new Carbon_Dioxide()};
         Element[]  radioactive = {new Neutron(), new Deuterium(), new Uranium()};
         Element[]  electricity = {new Battery(), new Wire(), new Delay(), new Engine()};
         Element[] special = {new Clone(), new Void(), new Virus(), new Stickman(), new Infiniburn()};
-        Element[]   tools = {};
+        Element[]   tools = {new Heat(), new Cool(), new Spark()};
 
         JPanel tab1 = new JPanel(new GridLayout(1,15,4,4));
         for(int i=0 ; i<solids.length ; i++){
@@ -401,6 +443,8 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
             b.addActionListener(e -> selectedElement = solids[finalI]);
             tab1.add(b);
         }
+
+        
 
         JPanel tab2 = new JPanel(new GridLayout(1,8,4,4));
 
@@ -446,6 +490,12 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         }
 
         JPanel tab7 = new JPanel(new GridLayout(1,8,4,4));
+for(int i=0 ; i<tools.length ; i++){
+            JButton b = new JButton(tools[i].getClass().getSimpleName().replaceAll("_", " "));
+            int finalI = i;
+            b.addActionListener(e -> selectedElement = tools[finalI]);
+            tab7.add(b);
+        }
 
         JPanel tab8 = new JPanel(new GridLayout(1,8,4,4));
         for(int i=0 ; i<radioactive.length ; i++){
@@ -499,10 +549,9 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
                 HEIGHT = height;
                 Debug.print(frame.getSize());
 
-                frame.setPreferredSize(new Dimension(WIDTH+22, HEIGHT+(531-420)));
+                frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT+55));
 
                 frame.pack();
-                Debug.print(frame.getSize());
 
                 grid = new Element[HEIGHT / SIZE][WIDTH / SIZE];
                 pressure = new double[grid.length][grid[0].length];
@@ -535,7 +584,7 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         consoleButton.addActionListener(e -> {
             boolean commandOpen = true;
             while (commandOpen) {
-                String cmd = JOptionPane.showInputDialog(null, "Enter a command, such as \"set 5 5 Sand\", cancel to exit: ", "Console", JOptionPane.PLAIN_MESSAGE);
+                String cmd = JOptionPane.showInputDialog(null, "Enter a command (use \"help\" for list of commands, press cancel to exit): ", "Console", JOptionPane.PLAIN_MESSAGE);
                 if (cmd != null) {
 
                     String[] parts = cmd.trim().split("\\s+");
@@ -549,7 +598,22 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
                         case "set":
                             setElementAt(Integer.parseInt(args[0]), Integer.parseInt(args[1]), createElementInstance(args[2]));
                             break;
-                    }
+                        case "delay":
+                            Delay.delayDuration = Integer.parseInt(args[0]);
+                            break;
+                        case "brush":
+                            selectedElement = createElementInstance(args[0]);
+                            break;
+                        case "help":
+                            JOptionPane.showMessageDialog(null,
+                            "Commands:\n" +
+                                    "set <x> <y> <element/null> - Set element at [x], [y] to [element/null]\n" +
+                                    "brush <element> - Sets your brush element to [element]\n" +
+                                    "delay <frames> - Sets how often the Delay element releases pulses\n",
+                            "Commands",
+                            JOptionPane.INFORMATION_MESSAGE);
+                            break;
+                        }
                 } else {
                     commandOpen = false;
                 }
@@ -558,70 +622,127 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
 
         JButton downloadButton = new JButton("Download");
         downloadButton.addActionListener(e -> {
-            String content = JOptionPane.showInputDialog(null, "Type in the save location (ex: aaccbb/demo).", "Download Simulation", JOptionPane.PLAIN_MESSAGE);
-            String urlString = "https://6d6ldeoyebpfbivviclcauaejm.srv.us/TPTJ/saves/"+content+".save";
-            StringBuilder result = new StringBuilder();
-
+            String[] items = null;
             try {
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line);
-                }
-                reader.close();
-            } catch (Exception efg) {
-                efg.printStackTrace();
+                String temp69 = new java.util.Scanner(new URL("https://6d6ldeoyebpfbivviclcauaejm.srv.us/TPTJ/list.php").openStream(), "UTF-8").useDelimiter("\\A").next();
+                temp69 = temp69.substring(0, temp69.length() - 1);
+                items = temp69.split(",");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
-            String content1 = result.toString();
-            if (content1 == null || content1.isEmpty()) return;
 
-            try {
-                String[] parts = content1.split("\\|", 2);
-                String[] header = parts[0].split(":");
-                int cellSize = Integer.parseInt(header[0]);
-                int width = Integer.parseInt(header[1]);
-                int height = Integer.parseInt(header[2]);
+            JLabel searchLabel = new JLabel("Search:");
+            JTextField searchField = new JTextField(15);
+            DefaultListModel<String> listModel = new DefaultListModel<>();
+            for (String item : items) {
+                listModel.addElement(item);
+            }
 
-                SIZE = Integer.parseInt(header[0].replaceFirst("^0+(?!$)", ""));
-                WIDTH = width;
-                HEIGHT = height;
-                Debug.print(frame.getSize());
+            JList<String> list = new JList<>(listModel);
+            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-                frame.setPreferredSize(new Dimension(WIDTH+22, HEIGHT+(531-420)));
+            String[] finalItems = items;
+            searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                public void insertUpdate(javax.swing.event.DocumentEvent e) { filterList(); }
+                public void removeUpdate(javax.swing.event.DocumentEvent e) { filterList(); }
+                public void changedUpdate(javax.swing.event.DocumentEvent e) { filterList(); }
 
-                frame.pack();
-                Debug.print(frame.getSize());
-
-                grid = new Element[HEIGHT / SIZE][WIDTH / SIZE];
-                pressure = new double[grid.length][grid[0].length];
-                temperatureGrid = new double[grid.length][grid[0].length];
-
-                for (int y = 0; y < pressure.length; y++) {
-                    for (int x = 0; x < pressure[0].length; x++) {
-                        pressure[y][x] = 0;
-                        temperatureGrid[y][x] = 70;
+                private void filterList() {
+                    String query = searchField.getText().toLowerCase();
+                    listModel.clear();
+                    for (String item : finalItems) {
+                        if (item.toLowerCase().contains(query)) {
+                            listModel.addElement(item);
+                        }
                     }
                 }
+            });
 
-                String[] rows = parts[1].split("-");
-                for (int y = 0; y < rows.length; y++) {
-                    String[] elements = rows[y].split(",");
-                    for (int x = 0; x < elements.length; x++) {
-                        int elementId = Integer.parseInt(elements[x]);
-                        grid[y][x] = (elementId == 0) ? null : createElementInstance(Element.getElementById(elementId).getSimpleName());
+            JPanel searchPanel = new JPanel();
+            searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
+            searchPanel.add(searchLabel);
+            searchPanel.add(searchField);
+
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(searchPanel, BorderLayout.NORTH);
+            JScrollPane scrollPane = new JScrollPane(list);
+            scrollPane.setPreferredSize(new Dimension(200, 100));
+            panel.add(scrollPane, BorderLayout.CENTER);
+
+            int option = JOptionPane.showConfirmDialog(
+                    null,
+                    panel,
+                    "Save Browser",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (option == JOptionPane.OK_OPTION) {
+                String selectedItem = list.getSelectedValue();
+                if (selectedItem != null) {
+                    String urlString = "https://6d6ldeoyebpfbivviclcauaejm.srv.us/TPTJ/saves/" + selectedItem + ".save";
+                    StringBuilder result = new StringBuilder();
+
+                    try {
+                        URL url = new URL(urlString);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("GET");
+
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                        reader.close();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(new JFrame(), "Save doesn't exist!", "Download Simulation", JOptionPane.ERROR_MESSAGE);
+                    }
+                    String content1 = result.toString();
+                    if (content1 == null || content1.isEmpty()) return;
+
+                    try {
+                        String[] parts = content1.split("\\|", 2);
+                        String[] header = parts[0].split(":");
+                        int cellSize = Integer.parseInt(header[0]);
+                        int width = Integer.parseInt(header[1]);
+                        int height = Integer.parseInt(header[2]);
+
+                        SIZE = Integer.parseInt(header[0].replaceFirst("^0+(?!$)", ""));
+                        WIDTH = width;
+                        HEIGHT = height;
+
+                        grid = new Element[HEIGHT / SIZE][WIDTH / SIZE];
+                        pressure = new double[grid.length][grid[0].length];
+                        temperatureGrid = new double[grid.length][grid[0].length];
+                        
+frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug has been scaring me for weeks and now i fix it :)
+                        frame.pack();
+
+                        for (int y = 0; y < pressure.length; y++) {
+                            for (int x = 0; x < pressure[0].length; x++) {
+                                pressure[y][x] = 0;
+                                temperatureGrid[y][x] = 70;
+                            }
+                        }
+
+                        String[] rows = parts[1].split("-");
+                        for (int y = 0; y < rows.length; y++) {
+                            String[] elements = rows[y].split(",");
+                            for (int x = 0; x < elements.length; x++) {
+                                int elementId = Integer.parseInt(elements[x]);
+                                grid[y][x] = (elementId == 0) ? null : createElementInstance(Element.getElementById(elementId).getSimpleName());
+                            }
+                        }
+
+                        repaint();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 }
-
-                frame.repaint();
-            } catch (Exception ex) {
-
-                ex.printStackTrace();
             }
         });
+
+
 
         JButton uploadButton = new JButton("Upload");
         uploadButton.addActionListener(e -> {
@@ -697,7 +818,7 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
             }
         });
 
-        JButton loginButton = new JButton("Log In");
+        JButton loginButton = new JButton("Log In/Sign Up");
         loginButton.addActionListener(e -> {
             JTextField username1 = new JTextField();
             JPasswordField password1 = new JPasswordField();
@@ -817,22 +938,35 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         aboutButton.addActionListener(e -> {
 
             JOptionPane.showMessageDialog(null, "Based off of Powder Toy, The Powder Toy, Java Powder Game, TheJavaPowder, and The Blocky Toy", "Credits (1/3)", JOptionPane.INFORMATION_MESSAGE);
-            JOptionPane.showMessageDialog(null, "Pre-release Testers\n\nIn Person:\nC. G. 11th\nN. R. 11th\nJ. E. 10th\nJ. W. 10th\nS. W. 10th\nC. B. 10th\nL. L. 9th\nN. S. 9th\nR. L. 9th\n\nOnline:\nSunny da moth\nloopy\nIEATDIRT", "Credits (2/3)", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Testers\n\nIn Person:\nB-J. K. 12th\nC. G. 11th\nN. R. 11th\nK. D. 10th\nM. E. 10th\nJ. E. 10th\nJ. W. 10th\nS. W. 10th\nC. B. 10th\nL. L. 9th\nN. S. 9th\nR. L. 9th\n\nOnline:\nSunny da moth\nloopy\nIEATDIRT\nThatoneguy\nJosh", "Credits (2/3)", JOptionPane.INFORMATION_MESSAGE);
             JOptionPane.showMessageDialog(null, "Programmed by aaccbb80 during Computer Science\n(thank you Mr. C!)\n\nmade with <3 by aaccbb", "Credits (3/3)", JOptionPane.INFORMATION_MESSAGE);
 
         });
 
+        /*JButton heatButton = new JButton("Heat");
+        aboutButton.addActionListener(e -> {
+            selectedElement = Heat;
+        });
+
+        JButton coolButton = new JButton("Cool");
+        aboutButton.addActionListener(e -> {
+            selectedElement = Cool;
+        });*/
+
         tab9.add(downloadButton);
         tab9.add(uploadButton);
 
-        tab7.add(clearButton);
+        
         tab9.add(importButton);
         tab9.add(saveButton);
+        //tab7.add(heatButton);
+        //tab7.add(coolButton);
         tab7.add(consoleButton);
         tab7.add(aboutButton);
         tab9.add(loginButton);
+        tab9.add(clearButton);
 
-        pane.addTab("⇅", tab9);
+        pane.addTab("Simulation", tab9);
         pane.addTab("Solids", tab1);
         pane.addTab("Liquids", tab2);
         pane.addTab("Powders", tab3);
@@ -841,6 +975,16 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         pane.addTab("Electricity", tab6);
         pane.addTab("Special", tab5);
         pane.addTab("Tools", tab7);
+
+        hover1(tab1);
+        hover1(tab2);
+        hover1(tab3);
+        hover1(tab4);
+        hover1(tab5);
+        hover1(tab6);
+        hover1(tab7);
+        hover1(tab8);
+        hover1(tab9);
 
         frame.add(pane, BorderLayout.SOUTH);
 
@@ -943,24 +1087,60 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
             }
             updateFPS();
             g.setColor(Color.GRAY);
-            g.setFont(new Font("Courier New", Font.PLAIN, 10));
-            String text1 = "FPS: " + fps;
-            g.drawString(text1, 2, 8);
-            String text = "X, Y: " + mouseX + ", " + mouseY;
-            g.drawString(text, 2, 16);
-            String text2 = "Element: " + temp1;
-            g.drawString(text2, 2, 24);
-            String text3 = "Pressure: " + Math.round(getPressureAt(mouseX, mouseY) * 100) / 100.0;
-            g.drawString(text3, 2, 32);
-            String text4 = "Temperature: " + Math.round(getHeatAt(mouseX, mouseY) * 100) / 100.0 + "°F";
-            g.drawString(text4, 2, 40);
+            g.setFont(new Font("Courier New", Font.PLAIN, 11));
 
+            int incrementerthingy = 10;
+            int draw = incrementerthingy;
+            String text1 = "FPS: " + fps;
+            g.drawString(text1, 2, draw);
+            draw += incrementerthingy;
+            String text = "X, Y: " + mouseX + ", " + mouseY;
+            g.drawString(text, 2, draw);
+            draw += incrementerthingy;
+            String text2 = "Element: " + temp1;
+            g.drawString(text2, 2, draw);
+            draw += incrementerthingy;
+            String text3 = "Pressure: " + Math.round(getPressureAt(mouseX, mouseY) * 100) / 100.0;
+            g.drawString(text3, 2, draw);
+            draw += incrementerthingy;
+            String text4 = "Temperature: " + Math.round(((getHeatAt(mouseX, mouseY) - 32) * 5 / 9) * 100) / 100.0 + "°C";
+            if (tempType) {
+            text4 = "Temperature: " + Math.round(getHeatAt(mouseX, mouseY) * 100) / 100.0 + "°F";
+            }
+            g.drawString(text4, 2, draw);
+            draw += incrementerthingy;
+            int abois = 0;
+            if (elementAtPosition != null) {
+
+                abois = elementAtPosition.getWeight();
+            }
+            String text5 = "Weight: " + abois;
+            String text6 = hoveredElement;
+            g.drawString(text5, 2, draw);
+            g.setColor(new Color(Math.max(Math.min(nameFrames,153), 0),Math.max(Math.min(nameFrames,153), 0),Math.max(Math.min(nameFrames,153), 0)));
+            g.setFont(new Font("Courier New", Font.PLAIN, 20));
+            g.drawString(text6, 2+3, this.getSize().height-9);
+            g.setFont(new Font("Courier New", Font.PLAIN, 11));
             g.setColor(Color.WHITE);
-            g.drawString(text1, 2+1, 8+1);
-            g.drawString(text, 2+1, 16+1);
-            g.drawString(text2, 2+1, 24+1);
-            g.drawString(text3, 2+1, 32+1);
-            g.drawString(text4, 2+1, 40+1);
+            draw = incrementerthingy+1;
+            g.drawString(text1, 2+1, draw);
+            draw += incrementerthingy;
+            g.drawString(text, 2+1, draw);
+            draw += incrementerthingy;
+            g.drawString(text2, 2+1, draw);
+            draw += incrementerthingy;
+            g.drawString(text3, 2+1, draw);
+            draw += incrementerthingy;
+            g.drawString(text4, 2+1, draw);
+            draw += incrementerthingy;
+            g.drawString(text5, 2+1, draw);
+            g.setColor(new Color(Math.min(nameFrames,255),Math.min(nameFrames,255),Math.min(nameFrames,255)));
+            g.setFont(new Font("Courier New", Font.PLAIN, 20));
+            g.drawString(text6, 2+4, this.getSize().height-8);
+            if (!(nameFrames <= 0)) {
+                nameFrames--;
+            }
+
         }
     }
 
@@ -1087,13 +1267,28 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
                     try {
                         Element newElement = element.getClass().getDeclaredConstructor().newInstance();
                         if (isEmpty(newX, newY) | replaceMode) {
-                            grid[newY][newX] = newElement;
-                            if (element instanceof Fire) {
-                                addHeatAt(x, y, 1000);
-                            } else if (element instanceof Plasma) {
-                                addHeatAt(x, y, 5000.0);
-                            }else if (element instanceof LN2) {
-                                addHeatAt(x, y, -450);
+                            if (!(element instanceof Heat || element instanceof Cool || element instanceof Spark)) {
+                                grid[newY][newX] = newElement;
+                                if (element instanceof Fire) {
+                                    addHeatAt(x, y, 1000);
+                                } else if (element instanceof Plasma) {
+                                    addHeatAt(x, y, 5000.0);
+                                }else if (element instanceof Liquid_Nitrogen) {
+                                    addHeatAt(x, y, -450);
+                                }else if (element instanceof Ice) {
+                                    addHeatAt(x, y, -40);
+                                }else if (element instanceof Lava) {
+                                    addHeatAt(x, y, 610);
+                                }
+                            } else if (element instanceof Heat){
+                                addHeatAt(x, y, 1);
+                            }else if (element instanceof Cool){
+                                addHeatAt(x, y, -1);
+                            }else if (element instanceof Spark){
+                                Element neighbor = getElementAt(x, y);
+                                if (neighbor instanceof Wire) {
+                                        ((Wire) neighbor).transferPower(true);
+                                }
                             }
                         }
                     } catch (Exception e) { JOptionPane.showMessageDialog(new JFrame(), "Fatal error!\n\n"+e+"\n\nThe program will now exit.", "Error!", JOptionPane.ERROR_MESSAGE); System.exit(0);
@@ -1104,13 +1299,26 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         brushSize = oldBrush;
     }
 
+
+
+
     public void swapElements(int x1, int y1, int x2, int y2) {
-        if (isInBounds(x2, y2)) {
-            Element temp = grid[y2][x2];
-            grid[y2][x2] = grid[y1][x1];
-            grid[y1][x1] = temp;
+        if (isInBounds(x1, y1) && isInBounds(x2, y2)) {
+            Element tempa = grid[y1][x1];
+            Element tempb = grid[y2][x2];
+
+            if (tempa != null && (tempb == null || tempb.getWeight() != -1)) {
+                if (isEmpty(x2, y2) || tempa.getWeight() > Objects.requireNonNull(tempb).getWeight()) {
+                    grid[y2][x2] = tempa;
+                    grid[y1][x1] = tempb;
+                }
+            }
         }
     }
+
+
+
+
 
     public boolean isRunning() {
         return running;

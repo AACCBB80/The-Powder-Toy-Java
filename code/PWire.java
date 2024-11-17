@@ -2,24 +2,29 @@ package thePowderToyJava;
 
 import java.awt.*;
 
-public class Void extends Element {
+public class PWire extends Element {
+    private int life;
+
+    public PWire() {
+        this.life = 2;
+    }
+
     @Override
     public void update(FallingSandGame game, int x, int y) {
-
         if (!game.isRunning()) return;
 
-Element elementAbove = game.getElementAt(x, y - 1);
+        if (life == 0) {
+            game.setElementAt(x, y, new Wire());
+        } else {
+            life--;
+        }
 
-            if (!(elementAbove instanceof Void || elementAbove instanceof Abobium)) {
-        if (!game.isEmpty(x, y - 1)) {
-
-        	game.setElementAt(x, y - 1, null);
-        }}
+        
     }
 
     @Override
     public void draw(Graphics g, int x, int y, int width, int height) {
-        g.setColor(Color.RED);
+        g.setColor(new Color(145, 153, 171));
         g.fillRect(x, y, width, height);
     }
 }

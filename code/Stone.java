@@ -17,28 +17,8 @@ public class Stone extends Element {
         }*/
 
 
-        if (game.getHeatAt(x, y) > 500) {
-            customColor = new Color(227, 136, 66);
-            if ((random.nextInt(4) == 0)) {
-                if (game.isEmpty(x, y + 1)) {
-                    game.swapElements(x, y, x, y + 1);
-                }
-                int rndInt = 0;
-                while (rndInt == 0) {
-                    rndInt = random.nextInt(3) - 1;
-                }
-
-                if (game.isEmpty(x + rndInt, y + 0)) {
-                    game.swapElements(x, y, x + rndInt, y + 0);
-                }
-                rndInt = 0;
-                while (rndInt == 0) {
-                    rndInt = random.nextInt(5) - 3;
-                }
-                if (game.isEmpty(x + rndInt, y + 1)) {
-                    game.swapElements(x, y, x + rndInt, y + 1);
-                }
-            }
+        if (game.getHeatAt(x, y) > 600) {
+            game.setElementAt(x,y,new Lava());
         } else {
             customColor = new Color(153,153,153);
             if (game.getPressureAt(x, y) > 20) {

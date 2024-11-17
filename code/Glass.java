@@ -15,24 +15,24 @@ public class Glass extends Element {
         if (game.getHeatAt(x, y) > 1000) {
             customColor = new Color(189, 120, 53);
             if ((random.nextInt(4) == 0)) {
-                if (game.isEmpty(x, y + 1)) {
+                //if (game.isEmpty(x, y + 1)) {
                     game.swapElements(x, y, x, y + 1);
-                }
+                //}
                 int rndInt = 0;
                 while (rndInt == 0) {
                     rndInt = random.nextInt(3) - 1;
                 }
 
-                if (game.isEmpty(x + rndInt, y + 0)) {
+                //if (game.isEmpty(x + rndInt, y + 0)) {
                     game.swapElements(x, y, x + rndInt, y + 0);
-                }
+                //}
                 rndInt = 0;
                 while (rndInt == 0) {
                     rndInt = random.nextInt(5) - 3;
                 }
-                if (game.isEmpty(x + rndInt, y + 1)) {
+                //if (game.isEmpty(x + rndInt, y + 1)) {
                     game.swapElements(x, y, x + rndInt, y + 1);
-                }
+                //}
             }
         } else {
             customColor = new Color(67, 67, 67);

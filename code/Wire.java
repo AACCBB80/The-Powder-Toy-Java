@@ -4,20 +4,29 @@ import java.awt.*;
 import java.util.Random;
 
 public class Wire extends Element {
-    private boolean isPowered = false;
-    private static final int POWER_DURATION = 20;
-    private int powerTimer = 0;
+     private int life;
 
+    boolean isPowered = false;
+
+    public Wire() {
+        this.life = 5;
+    }
     @Override
     public void update(FallingSandGame game, int x, int y) {
     	
     	Random random = new Random();
         //if (!(random.nextInt(3) == 1)) {
         //return;}
-        if (powerTimer > 0) {
-            powerTimer--;
+        if (life != 0) {
+            life--;
         } else {
-            isPowered = false;
+            life = 5;
+            return;
+        }
+
+        if (isPowered) {
+            game.addHeatAt(x, y, 15);
+            game.setElementAt(x,y,new PWire());
         }
 
 
@@ -28,7 +37,7 @@ public class Wire extends Element {
 
                 Element neighbor = game.getElementAt(x + dx, y + dy);
                 if (neighbor instanceof Wire) {
-                    if (((Wire) neighbor).isPowered == false) {
+                    if (!((Wire) neighbor).isPowered) {
                         ((Wire) neighbor).transferPower(isPowered);
                     }
                 }
@@ -37,14 +46,12 @@ public class Wire extends Element {
     }
 
     public void receiveElectricity() {
-        isPowered = true;
-        powerTimer = POWER_DURATION;
+            isPowered = true;
     }
 
     public void transferPower(boolean powered) {
         if (powered) {
             isPowered = true;
-            powerTimer = POWER_DURATION;
         }
     }
 

@@ -4,13 +4,16 @@ import java.awt.*;
 import java.util.Random;
 
 public class Nitroglycerin extends Element {
+    public Nitroglycerin() {
+        weight = 5;
+    }
     private static final Random random = new Random();
     @Override
     public void update(FallingSandGame game, int x, int y) {
 
         if (!game.isRunning()) return;
 
-        if (game.isEmpty(x, y + 1)) {
+        if (game.isEmpty(x, y + 1) || game.canPush(x,y,x,y+1)) {
             game.swapElements(x, y, x, y + 1);
         }
         int rndInt = 0;
@@ -19,7 +22,7 @@ public class Nitroglycerin extends Element {
             rndInt = random.nextInt(3) - 1;
         }
 
-        if (game.isEmpty(x+rndInt, y + 0)) {
+        if (game.isEmpty(x+rndInt, y + 0) || game.canPush(x,y,x+rndInt,y)) {
             game.swapElements(x, y, x+rndInt, y + 0);
         }
         rndInt = 0;
@@ -27,7 +30,7 @@ public class Nitroglycerin extends Element {
             Random random = new Random();
             rndInt = random.nextInt(5) - 3;
         }
-        if (game.isEmpty(x+rndInt, y + 1)) {
+        if (game.isEmpty(x+rndInt, y + 1) || game.canPush(x,y,x+rndInt,y+1)) {
             game.swapElements(x, y, x+rndInt, y + 1);
         }
         
@@ -39,8 +42,11 @@ public class Nitroglycerin extends Element {
             if ((random.nextInt(3) == 0)) {
                 int temp1 = random.nextInt(7) - 3;
                 int temp2 = random.nextInt(7) - 3;
-                    game.setElementAt(x+temp1, y+temp2, new Nitroglycerin());
+                if (game.isEmpty(x+temp1, y+temp2)) {
+                    game.setElementAt(x+temp1, y+temp2, new SecretExplosive());
+                }
                 game.addPressureAt(x+temp1, y+temp2, 20000);
+                game.addHeatAt(x+temp1, y+temp2, 500);
 
 
             }
