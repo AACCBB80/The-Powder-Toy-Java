@@ -23,6 +23,7 @@
 
 ### Screenshots
 ![SCREENSHOT01](https://github.com/user-attachments/assets/cfd4292f-6aa0-4396-8d9d-04c4f0de5b3e)
+![image](https://github.com/user-attachments/assets/c018ae51-aa70-4ad8-9000-b32e56c263b7)
 ![image](https://github.com/user-attachments/assets/19481f8e-06a7-4d81-bb47-a489d85e4354)
 ![image](https://github.com/user-attachments/assets/90c7d623-a51d-483c-8900-1514c9de7d45)
 
