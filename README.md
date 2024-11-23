@@ -1,13 +1,13 @@
-# ![tptj](https://github.com/user-attachments/assets/08132876-76f4-4132-b4dc-e8ca2daaf51f) The Powder Toy Java 8.0
+# ![tptj](https://github.com/user-attachments/assets/08132876-76f4-4132-b4dc-e8ca2daaf51f) The Powder Toy Java 9.0
 
-## Version 8.0 (no longer beta!)
+## Version 9.0 (no longer beta!)
 (press H in-game to show help menu)
 ### Features:
 - Solids, Liquids, Powders, and Gases
-- Radioactive Elements
+- Radioactivity
 - Electronics (WIP)
 - Stickmen
-- HUD + FPS Counter
+- HUD + FPS Counter (now with Heat, Pressure, Element, X+Y)
 - Heat
 - Pressure
 - Explosives
@@ -15,6 +15,11 @@
 - Resizable Cells
 - Online Saves (now with GUI list)
 - Weight
+- Food
+- Pausing
+- Plants
+- Metric System
+- Simplified Modding (element templates in source code)
 
 ### Screenshots
 ![SCREENSHOT01](https://github.com/user-attachments/assets/cfd4292f-6aa0-4396-8d9d-04c4f0de5b3e)
