@@ -59,7 +59,7 @@ public class Oil extends Element {
             this.life = -1;
 
             // weight of particle. -1 for solids and >= 1 for regular weights; ex.: 1 for gas, 2 for dust, 4 for water
-            weight = -1;
+            weight = 0;
         
         }
     
@@ -268,21 +268,23 @@ public class Oil extends Element {
                 if (game.getElementAt(x+1, y - 1) instanceof Plasma | game.getElementAt(x+0, y - 1) instanceof Plasma | game.getElementAt(x-1, y - 1) instanceof Plasma | game.getElementAt(x+1, y ) instanceof Plasma |game.getElementAt(x+0, y ) instanceof Plasma | game.getElementAt(x-1, y ) instanceof Plasma | game.getElementAt(x+1, y + 1) instanceof Plasma | game.getElementAt(x+0, y + 1) instanceof Plasma | game.getElementAt(x-1, y + 1) instanceof Plasma
                         | game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire | game.getElementAt(x+1, y + 1) instanceof Fire | game.getElementAt(x+0, y + 1) instanceof Fire | game.getElementAt(x-1, y + 1) instanceof Fire) {
                     if (game.getHeatAt(x,y) > 700) {
-                        game.setElementAt(x, y, new Plasma());
+                        game.setElementAt(x, y+1, new Plasma());
                     } else {
-                        game.setElementAt(x, y, new Fire());
+                        game.setElementAt(x, y+1, new Fire());
                     }
                 }
                 break;
             case "MEDIUM":
-                if (!(random.nextInt(60) == 1)) {
+                if (!(random.nextInt(40) == 1)) {
                     return;
                 }
                 if (game.getElementAt(x+1, y - 1) instanceof Plasma | game.getElementAt(x+0, y - 1) instanceof Plasma | game.getElementAt(x-1, y - 1) instanceof Plasma | game.getElementAt(x+1, y ) instanceof Plasma |game.getElementAt(x+0, y ) instanceof Plasma | game.getElementAt(x-1, y ) instanceof Plasma | game.getElementAt(x+1, y + 1) instanceof Plasma | game.getElementAt(x+0, y + 1) instanceof Plasma | game.getElementAt(x-1, y + 1) instanceof Plasma
                         | game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire | game.getElementAt(x+1, y + 1) instanceof Fire | game.getElementAt(x+0, y + 1) instanceof Fire | game.getElementAt(x-1, y + 1) instanceof Fire) {
                     if (game.getHeatAt(x,y) > 700) {
                         game.setElementAt(x, y, new Plasma());
+                        game.setElementAt(x, y, new Plasma());
                     } else {
+                        game.setElementAt(x, y, new Fire());
                         game.setElementAt(x, y, new Fire());
                     }
                 }

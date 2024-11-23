@@ -5,7 +5,10 @@ import java.awt.*;
 public class Cool extends Element {
     @Override
     public void update(FallingSandGame game, int x, int y) {
-        	// this is a tool, ofc no code in this class
+        	// no code
+
+
+
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Random;
 public class Broken_Coal extends Element {
 
     public Broken_Coal() {
-        weight = 10;
+        weight = 0;
     }
 
     private Color customColor = new Color(100, 100, 106);

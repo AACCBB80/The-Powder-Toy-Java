@@ -31,6 +31,12 @@ public class KeyListenerHandler implements KeyEventDispatcher {
                 case "M":
                     FallingSandGame.tempType = !FallingSandGame.tempType;
                     break;
+                case "O":
+                    FallingSandGame.displayMode++;
+                    break;
+                case "SPACE":
+                    FallingSandGame.paused = !FallingSandGame.paused;
+                    break;
                 /*case "EQUALS":
                     FallingSandGame.hudsize++;
                     break;
@@ -42,14 +48,18 @@ public class KeyListenerHandler implements KeyEventDispatcher {
                             "Hotkeys:\n" +
                                     "P - Toggle Replace Mode\n" +
                                     "M - Toggle Imperial/Metric\n" +
+                                    "O - Change Render Mode\n" +
                                     "L - Toggle Debug Mode\n" +
+                                    "Space - Toggle Pause\n" +
                                     "W/A/S/D - Control Stickman\n\n" +
                                     "Help:\n" +
                                     "- Cell size alters the size of cells, not the simulation\n" +
                                     "- Delay does not require a power source\n\n" +
                                     "Coming Soon:\n" +
+                                    "- More languages (maybe)\n"+
                                     "- More electrical components, such as Piston, Radio, and\n  Liquid Crystal\n" +
                                     "- Copy tool and paste tool\n\n" +
+                                    "- Undo (only 5 undos due to memory consumption)\n"+
                                     "Bugs/Suggestions:\n" +
                                     "- Simulation size is known to bug out when loading a           \n  simulation (fixed?)\n"+
                                     "- Old save versions break in new versions (fixing)\n"+

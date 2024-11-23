@@ -4,9 +4,9 @@ import java.awt.*;
 import java.util.Random;
 import java.awt.Color;
 
-public class Dust extends Element {
+public class Flour extends Element {
     double airRes = 1;
-    public Dust() {
+    public Flour() {
         weight = 2;
     }
     @Override
@@ -30,11 +30,29 @@ public class Dust extends Element {
             game.swapElements(x, y, x + rndInt, y + 1);
         }
 
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+
+                if (dx == 0 && dy == 0) continue;
+
+                Element neighbor = game.getElementAt(x + dx, y + dy);
+                if (neighbor instanceof Water) {
+                    game.setElementAt(x,y,null);
+                    game.setElementAt(x + dx, y + dy, new Batter());
+                    break;
+                } else if (neighbor instanceof Milk) {
+                    game.setElementAt(x,y,null);
+                    game.setElementAt(x + dx, y + dy, new Cake_Batter());
+                    break;
+                }
+            }
+        }
+
     }
 
     @Override
     public void draw(Graphics g, int x, int y, int width, int height) {
-        Color customColor = new Color(233, 235, 199);
+        Color customColor = new Color(253, 255, 219);
         g.setColor(customColor);
         g.fillRect(x, y, width, height);
     }

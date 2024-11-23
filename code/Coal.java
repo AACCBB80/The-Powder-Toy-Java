@@ -10,7 +10,7 @@ public class Coal extends Element {
         if (!game.isRunning()) return;
 
         Random random = new Random();
-        if (!(random.nextInt(60) == 1)) {
+        if (!(random.nextInt(60) == 1)) { 
         return;
         }
 

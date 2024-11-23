@@ -19,6 +19,7 @@ public class Plasma extends Element {
         if (!(random.nextInt(2) == 1)) {
             return;
         }
+        game.addHeatAt(x, y, 2);
         game.addPressureAt(x, y, 100);
         customColor = new Color((int)Math.min((187.0 * (life / 30.0)), 255),
                 (int) (138.0 * (life / 100.0)), (int) (255.0 * (life / 100.0)));

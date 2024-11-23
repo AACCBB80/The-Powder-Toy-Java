@@ -3,7 +3,7 @@ package thePowderToyJava;
 import java.awt.*;
 import java.util.Random;
 
-public class Lava extends Element {
+public class Ethanol extends Element {
 
     private int life;
 
@@ -12,32 +12,32 @@ public class Lava extends Element {
         // IMPORTANT: you have to register element in class FallingSandGame marked by comment that says "ELEMENT INIT"
 
         // random update frequency of particle. 1 to update every frame, >= 2 to update at roughly every X frames; ex.: Water is 1, Oxygen is 2
-        int RANDOM_UPDATE_FREQUENCY = 1;
+        int RANDOM_UPDATE_FREQUENCY = 1; 
 
         // state of element. SOLID/LIQUID/POWDER/GAS are valid states; ex.: Wood is SOLID, Oxygen is GAS
         String TYPE = "LIQUID";
 
-        // liquid viscosity. only works when TYPE is LIQUID; ex.: Water is 1, Goop is 4
-        int LIQUID_VISCOSITY = 6;
+        // liquid viscosity. only works when TYPE is LIQUID; ex.: Water is 1, Goop is 4 
+        int LIQUID_VISCOSITY = 1;
 
-        // air resistance of particle. -1 is none; only works if TYPE is POWDER; ex.: -1 for Broken_Coal, 0.5 for dust, 1 for sawdust
+        // air resistance of particle. -1 is none; only works if TYPE is POWDER; ex.: -1 for Broken_Coal, 0.5 for dust, 1 for sawdust 
         double AIR_RESISTANCE = 1;
 
-        // gas buoyancy. FLOAT/NEUTRAL/SINK are valid states; only works if TYPE is GAS; ex.: -1 for Broken_Coal, 0.5 for dust, 1 for sawdust
+        // gas buoyancy. FLOAT/NEUTRAL/SINK are valid states; only works if TYPE is GAS; ex.: -1 for Broken_Coal, 0.5 for dust, 1 for sawdust 
         String GAS_BUOYANCY = "NEUTRAL";
 
         // how flammable the particle is. NONE/LOW/MEDIUM/HIGH/EXPLOSIVELOW/EXPLOSIVEHIGH are valid states; ex.: Water is NONE, Nitroglycerin is EXPLOSIVEHIGH, Wood is MEDIUM
-        String FLAMMABILITY = "NONE";
+        String FLAMMABILITY = "HIGH";
 
         // what color the element should be in R, G, B format; ex.: 171, 125, 0 for Wood, 80, 67, 125 for Deuterium
-        Color ELEMENT_COLOR = new Color(218, 144, 58);
+        Color ELEMENT_COLOR = new Color(205, 197, 214);
 
         // pressure at which particle breaks. -1 is unbreakable; >= 0 is breakable at X pressure; ex.: Wood at 15, Stone at 20
         int BREAK_PRESSURE = -1;
 
         // what the particle turns into when it's broken. not required when BREAK_PRESSURE = -1; ex.: Wood to Sawdust, Stone to Gravel
         Element brokenElement = null;
-
+        
         // temperature at which particle melts/evaporates. -1 is unmeltable; >= 0 is meltable at X temperature; ex.: Water at 200
         int MELT_TEMPERATURE = -1;
 
@@ -45,21 +45,21 @@ public class Lava extends Element {
         Element meltedElement = null;
 
         // temperature at which particle freezes. -1 is unfreezable; >= 0 is freezable at X temperature; ex.: Water at 20
-        int FREEZE_TEMPERATURE = 590;
+        int FREEZE_TEMPERATURE = -1;
 
         // what the particle turns into when it's frozen. not required when FREEZE_TEMPERATURE = -1; ex.: Ice from Water
-        Element frozenElement = new Stone();
+        Element frozenElement = null;
 
-        // starting air resistance of particle. only works if TYPE is POWDER; ex.: 1 for dust, 1 for sawdust
+        // starting air resistance of particle. only works if TYPE is POWDER; ex.: 1 for dust, 1 for sawdust 
         double airRes = 1;
-
-        public Lava() {
+        
+        public Ethanol() {
 
             // starting life of particle in frames. -1 does not despawn; >= 0 lasts X frames; ex.: 100 for fire, 50 for smoke
             this.life = -1;
 
             // weight of particle. -1 for solids and >= 1 for regular weights; ex.: 1 for gas, 2 for dust, 4 for water
-            weight = 10;
+            weight = 3;
         
         }
     
@@ -75,9 +75,6 @@ public class Lava extends Element {
         if (!game.isRunning()) return;
 
         Random random = new Random();
-        if (!(random.nextInt(RANDOM_UPDATE_FREQUENCY) == 0)) {
-        return;
-        }
 
         if (life !=-1) {
         if (life == 0) {
@@ -92,9 +89,6 @@ public class Lava extends Element {
             case "SOLID":
                 break;
             case "LIQUID":
-                if ((random.nextInt(LIQUID_VISCOSITY) == 0)) {
-                    break;
-                }
 
                 if (game.isEmpty(x, y + 1) || game.canPush(x, y, x, y + 1)) {
                     game.swapElements(x, y, x, y + 1);
@@ -291,13 +285,9 @@ public class Lava extends Element {
                 if (!(random.nextInt(5) == 1)) {
                     return;
                 }
-                if (game.getElementAt(x+1, y - 1) instanceof Plasma | game.getElementAt(x+0, y - 1) instanceof Plasma | game.getElementAt(x-1, y - 1) instanceof Plasma | game.getElementAt(x+1, y ) instanceof Plasma |game.getElementAt(x+0, y ) instanceof Plasma | game.getElementAt(x-1, y ) instanceof Plasma | game.getElementAt(x+1, y + 1) instanceof Plasma | game.getElementAt(x+0, y + 1) instanceof Plasma | game.getElementAt(x-1, y + 1) instanceof Plasma
-                        | game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire | game.getElementAt(x+1, y + 1) instanceof Fire | game.getElementAt(x+0, y + 1) instanceof Fire | game.getElementAt(x-1, y + 1) instanceof Fire) {
-                    if (game.getHeatAt(x,y) > 700) {
+                if (game.getElementAt(x+1, y - 1) instanceof Plasma | game.getElementAt(x+0, y - 1) instanceof Plasma | game.getElementAt(x-1, y - 1) instanceof Plasma | game.getElementAt(x+1, y ) instanceof Plasma |game.getElementAt(x+0, y ) instanceof Plasma | game.getElementAt(x-1, y ) instanceof Plasma |
+                        game.getElementAt(x+1, y - 1) instanceof Fire | game.getElementAt(x+0, y - 1) instanceof Fire | game.getElementAt(x-1, y - 1) instanceof Fire | game.getElementAt(x+1, y ) instanceof Fire |game.getElementAt(x+0, y ) instanceof Fire | game.getElementAt(x-1, y ) instanceof Fire) {
                         game.setElementAt(x, y, new Plasma());
-                    } else {
-                        game.setElementAt(x, y, new Fire());
-                    }
                 }
                 break;
             case "EXPLOSIVELOW":
@@ -322,35 +312,22 @@ public class Lava extends Element {
                     if ((random.nextInt(3) == 0)) {
                         int temp1 = random.nextInt(7) - 3;
                         int temp2 = random.nextInt(7) - 3;
-                        if (game.isEmpty(x+temp1, y+temp2)) {
                         game.setElementAt(x+temp1, y+temp2, new SecretExplosive());
-                        game.addPressureAt(x+temp1, y+temp2, 20000);}
+                        game.addPressureAt(x+temp1, y+temp2, 20000);
 
 
                     }}
                 break;
         }
 
-        if ((random.nextInt(45) == 0)) {
-            int temp1 = random.nextInt(7) - 3;
-            int temp2 = random.nextInt(7) - 3;
-            if (game.isEmpty(x+temp1, y+temp2) && temp1 != 0 && temp2 != 0) {
-                if (game.getHeatAt(x,y) > 700) {
-                    game.setElementAt(x + temp1, y + temp2, new Plasma());
-                } else {
-                    game.setElementAt(x + temp1, y + temp2, new Fire());
-                }}
-            }
-
-
         if (MELT_TEMPERATURE != -1) {
             if (game.getHeatAt(x, y) >= MELT_TEMPERATURE) {
-                game.setElementAt(x,y,new Stone());
+                game.setElementAt(x,y,frozenElement);
             }}
 
         if (FREEZE_TEMPERATURE != -1) {
             if (game.getHeatAt(x, y) <= FREEZE_TEMPERATURE) {
-                game.setElementAt(x,y,frozenElement);
+                game.setElementAt(x,y,meltedElement);
             }}
 
 

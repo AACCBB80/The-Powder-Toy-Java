@@ -26,7 +26,7 @@ public class Abobium extends Element {
 Class<? extends Element> elementClass = Element.getElementById(randomIndex);
 if (elementClass != null) {
     Element elementInstance = game.createElementInstance(elementClass.getSimpleName());
-    if (elementInstance != null && !(elementClass.getSimpleName().equals("Abobium")) && !(elementClass.getSimpleName().equals("Virus"))) {
+    if (elementInstance != null && !(elementClass.getSimpleName().equals("Abobium")) && !(elementClass.getSimpleName().equals("Virus")) && !(elementClass.getSimpleName().equals("Void"))) {
         game.setElementAt(x + dx, y + dy, elementInstance);
     } else {
     }

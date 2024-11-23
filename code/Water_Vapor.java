@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Water_Vapor extends Element {
     public Water_Vapor() {
-        weight = -1;
+        weight = 0;
     }
     @Override
     public void update(FallingSandGame game, int x, int y) {

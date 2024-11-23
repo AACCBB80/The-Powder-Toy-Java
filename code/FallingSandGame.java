@@ -13,16 +13,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FallingSandGame extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener {
-    public static int WIDTH = 800;
+    public static int WIDTH = 1000;
     public static int HEIGHT = 420;
     public static int SIZE = 6;
     private Element[][] grid = new Element[HEIGHT / SIZE][WIDTH / SIZE];
     private double[][] pressure = new double[HEIGHT / SIZE][WIDTH / SIZE];
     private double[][] temperatureGrid;
-    private int brushSize = 5;
+    private int brushSize = 3;
     long frameCounter = 0;
     public static boolean replaceMode = false;
     public static boolean tempType = true;
+    public static boolean paused = false;
 
     public static String keyPressed = null;
     public static boolean debugMode = true;
@@ -31,6 +32,7 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
     private long lastTime = System.nanoTime();
     private int frames = 0;
     public static int nameFrames = 0;
+    public static int displayMode = 0;
     public static String hoveredElement = "";
     private String username = null;
     private String password = null;
@@ -107,6 +109,12 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         }
     }
 
+    public void setHeatAt(int x, int y, double pressureC) {
+        if (isInBounds(x, y)) {
+            temperatureGrid[y][x] = pressureC;
+        }
+    }
+
     public double getHeatAt(int x, int y) {
         if (temperatureGrid == null) {return 0;}
         if (isInBounds(x, y)) {
@@ -117,8 +125,8 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
 
     private void updatePressure() {
         double[][] newPressureGrid = new double[pressure.length][pressure[0].length];
-        double diffusionFactor = 0.05;
-        double decayFactor = 0.90;
+        double diffusionFactor = 0.35;
+        double decayFactor = 0.60;
 
         for (int y = 0; y < pressure.length; y++) {
             for (int x = 0; x < pressure[0].length; x++) {
@@ -156,7 +164,7 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
         for (int y = 0; y < temperatureGrid.length; y++) {
             for (int x = 0; x < temperatureGrid[0].length; x++) {
                 double currentTemp = temperatureGrid[y][x];
-                double diffusionFactor = 0.80;
+                double diffusionFactor = 0.40;
                 double accumulatedTemp = currentTemp;
                 int count = 1;
 
@@ -327,7 +335,7 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
             }
         });
 
-        JFrame frame = new JFrame("The Powder Toy Java (8.0)");
+        JFrame frame = new JFrame("The Powder Toy Java (9.0)");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addKeyListener(this);
         Color customColor = new Color(28, 28, 28);
@@ -421,19 +429,41 @@ public class FallingSandGame extends JPanel implements Runnable, MouseListener, 
             }
         });
 
+        JButton pauseButton = new JButton("Toggle Pause");
+        pauseButton.addActionListener(e -> {
+            paused = !paused;
+
+        });
+
+        JButton replaceButton = new JButton("Toggle Replace Brush");
+        replaceButton.addActionListener(e -> {
+            replaceMode = !replaceMode;
+
+        });
+
+        JButton systemButton = new JButton("Toggle Units");
+        systemButton.addActionListener(e -> {
+            tempType = !tempType;
+        });
+
+        JButton HUDButton = new JButton("Toggle HUD");
+        HUDButton.addActionListener(e -> {
+            debugMode = !debugMode;
+        });
+
         JPanel controlPanel = new JPanel();
 
         pane.setPreferredSize(new Dimension(frame.getWidth(), 45));
 
         // ELEMENT INIT 
 
-        Element[]  solids = {new Wood(), new Coal(), new Diamond(), new Stone(), new Glass(), new Ice(), new Paper(), new TNT(), new Plastic(), new Lead()};
-        Element[] liquids = {new Water(), new Goop(), new Nitroglycerin(), new Liquid_Nitrogen(), new Acid(), new Oil(), new Lava()};
-        Element[] powders = {new Dust(), new Sand(), new Sawdust(), new Gravel(), new Broken_Coal(), new Broken_Glass()};
+        Element[]  solids = {new Wood(), new Coal(), new Stone(), new Glass(), new Ice(), new Paper(), new TNT(), new Plastic(), new Lead(), new Plant(), new Flesh(), new Bread(), new Cake(), new Brick()};
+        Element[] liquids = {new Water(), new Goop(), new Nitroglycerin(), new Liquid_Nitrogen(), new Acid(), new Oil(), new Lava(), new Ethanol(), new Salt_Water(), new Milk(), new Batter(), new Cake_Batter()};
+        Element[] powders = {new Dust(), new Sand(), new Sawdust(), new Gravel(), new Broken_Coal(), new Broken_Glass(), new Dirt(), new Salt(), new Flour()};
         Element[]  gasses = {new Fire(), new Plasma(), new Gas(), new Smoke(), new Oxygen(), new Hydrogen(), new Water_Vapor(), new Carbon_Dioxide()};
         Element[]  radioactive = {new Neutron(), new Deuterium(), new Uranium()};
         Element[]  electricity = {new Battery(), new Wire(), new Delay(), new Engine()};
-        Element[] special = {new Clone(), new Void(), new Virus(), new Stickman(), new Infiniburn()};
+        Element[] special = {new Clone(), new Void(), new Virus(), new Stickman(), new Infiniburn(), new Seed(), new Diamond(), new Heat_Conductor()};
         Element[]   tools = {new Heat(), new Cool(), new Spark()};
 
         JPanel tab1 = new JPanel(new GridLayout(1,15,4,4));
@@ -507,11 +537,6 @@ for(int i=0 ; i<tools.length ; i++){
 
         JPanel tab9 = new JPanel(new GridLayout(1,8,4,4));
 
-        JButton pauseButton = new JButton("Pause");
-        pauseButton.addActionListener(e -> {
-            running = !running;
-            pauseButton.setText(running ? "Pause" : "Resume");
-        });
 
         JButton saveButton = new JButton("Export");
         saveButton.addActionListener(e -> {
@@ -538,7 +563,7 @@ for(int i=0 ; i<tools.length ; i++){
             if (content == null || content.isEmpty()) return;
 
             try {
-                String[] parts = content.split("\\|", 2);
+            	String[] parts = content.split("\\|", 2);
                 String[] header = parts[0].split(":");
                 int cellSize = Integer.parseInt(header[0]);
                 int width = Integer.parseInt(header[1]);
@@ -548,14 +573,14 @@ for(int i=0 ; i<tools.length ; i++){
                 WIDTH = width;
                 HEIGHT = height;
                 Debug.print(frame.getSize());
-
-                frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT+55));
-
-                frame.pack();
+               
 
                 grid = new Element[HEIGHT / SIZE][WIDTH / SIZE];
                 pressure = new double[grid.length][grid[0].length];
                 temperatureGrid = new double[grid.length][grid[0].length];
+                
+frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug has been scaring me for weeks and now i fix it :)
+                frame.pack();
 
                 for (int y = 0; y < pressure.length; y++) {
                     for (int x = 0; x < pressure[0].length; x++) {
@@ -604,11 +629,21 @@ for(int i=0 ; i<tools.length ; i++){
                         case "brush":
                             selectedElement = createElementInstance(args[0]);
                             break;
+                        case "fill":
+                                for (int xe = Integer.valueOf(args[0]); xe <= Integer.valueOf(args[2]); xe++) {
+                                    for (int ye = Integer.valueOf(args[1]); ye <= Integer.valueOf(args[3]); ye++) {
+                                        if (isInBounds(xe,ye)) {
+                                            setElementAt(xe, ye, createElementInstance(args[4]));
+                                        }
+                                    }
+                                }
+                            break;
                         case "help":
                             JOptionPane.showMessageDialog(null,
                             "Commands:\n" +
-                                    "set <x> <y> <element/null> - Set element at [x], [y] to [element/null]\n" +
-                                    "brush <element> - Sets your brush element to [element]\n" +
+                                    "set <x> <y> <element/null> - Set cell at [x], [y] to [element/null]\n" +
+                                    "brush <element> - Sets your brush to [element]\n" +
+                                    "fill <x> <y> <x> <y> <element/null> - Fill area from [x], [y] to [x], [y] with [element/null]\n" +
                                     "delay <frames> - Sets how often the Delay element releases pulses\n",
                             "Commands",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -681,6 +716,8 @@ for(int i=0 ; i<tools.length ; i++){
                 String selectedItem = list.getSelectedValue();
                 if (selectedItem != null) {
                     String urlString = "https://6d6ldeoyebpfbivviclcauaejm.srv.us/TPTJ/saves/" + selectedItem + ".save";
+                    urlString = urlString.replaceAll(" ", "%20");
+                    Debug.print(urlString);
                     StringBuilder result = new StringBuilder();
 
                     try {
@@ -750,7 +787,7 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
                 JOptionPane.showMessageDialog(new JFrame(), "Please sign in first.", "Upload Simulation", JOptionPane.WARNING_MESSAGE);
             } else {
                 String content = JOptionPane.showInputDialog(null, "Name your simulation:", "Upload Simulation", JOptionPane.PLAIN_MESSAGE);
-                String REGEX = "^[a-zA-Z0-9]*$";
+                String REGEX = "^[a-zA-Z0-9. ]*$";
                 Pattern PATTERN = Pattern.compile(REGEX);
                 Matcher matcher = PATTERN.matcher(content);
                 boolean result = matcher.matches();
@@ -962,8 +999,12 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
         //tab7.add(heatButton);
         //tab7.add(coolButton);
         tab7.add(consoleButton);
+        tab7.add(replaceButton);
+        tab7.add(systemButton);
+        tab7.add(HUDButton);
         tab7.add(aboutButton);
         tab9.add(loginButton);
+        tab9.add(pauseButton);
         tab9.add(clearButton);
 
         pane.addTab("Simulation", tab9);
@@ -1010,21 +1051,23 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
             delta += (now - lastTime) / nsPerUpdate;
             lastTime = now;
 
-            if (running) {
+            
                 if (mouseHeld) {
                     if (mouseButtonPressed == MouseEvent.BUTTON1) {
                         addElement(mouseX, mouseY, selectedElement);
                     }
                 }
-
+            
                 while (delta >= 1) {
-                    updateGrid();
+                    if (!paused) {
+                    updateGrid();}
                     delta--;
-                }
+                
                 frameCounter++;
 
-                repaint();
+                
             }
+            repaint();
 
             try {
                 Thread.sleep(2);
@@ -1039,7 +1082,9 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
             for (int y = grid.length - 1; y >= 0; y--) {
                 for (int x = 0; x < grid[0].length; x++) {
                     if (grid[y][x] != null) {
+                        if (!paused) {
                         grid[y][x].update(this, x, y);
+                        }
                     }
                 }
             }
@@ -1061,7 +1106,21 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[0].length; x++) {
                 if (grid[y][x] != null) {
-                    grid[y][x].draw(g, x * SIZE + xOffset, y * SIZE + yOffset, SIZE, SIZE);
+                    switch (displayMode%3) {
+                        case 0:
+                            grid[y][x].draw(g, x * SIZE + xOffset, y * SIZE + yOffset, SIZE, SIZE);
+                            break;
+                        case 1:
+                            int tmpheat = (int) Math.round(Math.max(0, Math.min(255, (getHeatAt(x, y)+58)/5)));
+                            g.setColor(new Color(tmpheat,tmpheat,tmpheat));
+                            g.fillRect(x * SIZE + xOffset, y * SIZE + yOffset, SIZE, SIZE);
+                            break;
+                        case 2:
+                            int tmppres = (int) Math.round(Math.max(0, Math.min(255, (getPressureAt(x,y))/5)));
+                            g.setColor(new Color(tmppres,tmppres,tmppres));
+                            g.fillRect(x * SIZE + xOffset, y * SIZE + yOffset, SIZE, SIZE);
+                            break;
+                    }
                 }
 
             }
@@ -1104,6 +1163,7 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
             g.drawString(text3, 2, draw);
             draw += incrementerthingy;
             String text4 = "Temperature: " + Math.round(((getHeatAt(mouseX, mouseY) - 32) * 5 / 9) * 100) / 100.0 + "°C";
+            String text7 = paused ? "Paused" : "Unpaused";
             if (tempType) {
             text4 = "Temperature: " + Math.round(getHeatAt(mouseX, mouseY) * 100) / 100.0 + "°F";
             }
@@ -1117,7 +1177,9 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
             String text5 = "Weight: " + abois;
             String text6 = hoveredElement;
             g.drawString(text5, 2, draw);
-            g.setColor(new Color(Math.max(Math.min(nameFrames,153), 0),Math.max(Math.min(nameFrames,153), 0),Math.max(Math.min(nameFrames,153), 0)));
+            draw += incrementerthingy;
+            g.drawString(text7, 2, draw);
+            g.setColor(new Color(153,153,153,Math.min(nameFrames,255)));
             g.setFont(new Font("Courier New", Font.PLAIN, 20));
             g.drawString(text6, 2+3, this.getSize().height-9);
             g.setFont(new Font("Courier New", Font.PLAIN, 11));
@@ -1134,7 +1196,9 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
             g.drawString(text4, 2+1, draw);
             draw += incrementerthingy;
             g.drawString(text5, 2+1, draw);
-            g.setColor(new Color(Math.min(nameFrames,255),Math.min(nameFrames,255),Math.min(nameFrames,255)));
+            draw += incrementerthingy;
+            g.drawString(text7, 2+1, draw);
+            g.setColor(new Color(255,255,255,Math.min(nameFrames,255)));
             g.setFont(new Font("Courier New", Font.PLAIN, 20));
             g.drawString(text6, 2+4, this.getSize().height-8);
             if (!(nameFrames <= 0)) {
@@ -1241,11 +1305,11 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
 
     private void addElement(int x, int y, Element element) {
 
-        if (element instanceof Stickman) {
+        if (element instanceof Stickman || element instanceof Seed) {
 
             for (int row = 0; row < grid.length; row++) {
                 for (int col = 0; col < grid[row].length; col++) {
-                    if (grid[row][col] instanceof Stickman) {
+                    if (grid[row][col] instanceof Stickman || grid[row][col] instanceof Seed ) {
 
                         return;
                     }
@@ -1254,7 +1318,7 @@ frame.setPreferredSize(new Dimension(WIDTH+11, HEIGHT + 55)); //omfg this bug ha
         }
 
         int oldBrush = brushSize;
-        if (element instanceof Stickman) {
+        if (element instanceof Stickman || element instanceof Seed) {
 
             brushSize = 1;
 

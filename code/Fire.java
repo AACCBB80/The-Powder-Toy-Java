@@ -20,6 +20,8 @@ public class Fire extends Element {
         if (!(random.nextInt(2) == 1)) {
             return;
         }
+        game.addHeatAt(x, y, 1);
+
         game.addPressureAt(x, y, 100);
         //System.out.println(255.0 * (life / 100.0) + " " + life / 100.0);
         customColor = new Color((int)Math.min((255.0 * (life / 30.0)), 255),
